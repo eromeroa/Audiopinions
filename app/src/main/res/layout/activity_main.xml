@@ -1,104 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimaryDark"
+    tools:context=".MainActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <LinearLayout
-            android:layout_weight="7"
-            android:layout_height="0dp"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7"
             android:orientation="vertical">
+
             <Chronometer
                 android:id="@+id/chronometer"
-                android:fontFamily="@font/product_sans_regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textSize="100sp"
+                android:layout_marginTop="80dp"
+                android:fontFamily="@font/product_sans_regular"
                 android:textColor="#ffffff"
-                android:layout_marginTop="80dp">
-
-            </Chronometer>
+                android:textSize="100sp"/>
 
         </LinearLayout>
+
         <LinearLayout
-            android:layout_weight="5"
-            android:layout_height="0dp"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_gravity="center"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="20dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
+
                 <Button
-                    android:gravity="center"
-                    android:visibility="invisible"
                     android:id="@+id/botonDelete"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/button_animation"
+                    android:gravity="center"
                     android:onClick="deleteAudio"
                     android:text="Delete"
                     android:textColor="#ffffff"
-                    android:layout_gravity="center"
-                    android:background="@drawable/button_animation"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp">
-                </Button>
+                    android:visibility="invisible" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/container"
-                android:layout_gravity="center"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="130dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <ImageButton
-                    android:layout_gravity="center"
-                    android:onClick="startChronometer"
                     android:id="@+id/botonCentral"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/button_animation"
+                    android:onClick="startChronometer"
                     android:scaleType="fitXY"
-                    android:src="@drawable/mic_icon"
-                    android:background="@drawable/button_animation"/>
+                    android:src="@drawable/mic_icon" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_gravity="center"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginEnd="20dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
+
                 <Button
-                    android:gravity="center"
-                    android:visibility="invisible"
                     android:id="@+id/botonSend"
-                    android:text="Send"
-                    android:textColor="#ffffff"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
                     android:layout_gravity="center"
                     android:background="@drawable/button_animation"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp">
-                </Button>
+                    android:gravity="center"
+                    android:text="Send"
+                    android:textColor="#ffffff"
+                    android:visibility="invisible" />
             </LinearLayout>
 
-
         </LinearLayout>
-
-
 
     </LinearLayout>
 
