@@ -57,12 +57,8 @@ public class MainActivity extends AppCompatActivity {
             stopRecording();
         }
         else if (!recording && recorded){
-            if (!playing){
-                playAudio();
-            }
-            else{
-                stopAudio();
-            }
+            if (!playing) playAudio();
+            else stopAudio();
         }
     }
 
@@ -87,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
             audioRecorder.prepare();
             audioRecorder.start();
         } catch (IllegalStateException ise) {
-
+            ise.printStackTrace();
         } catch (IOException ioe) {
-
+            ioe.printStackTrace();
         }
         changeCentralButtonIcon("stop");
     }
@@ -111,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         resetChrono();
         startChrono();
@@ -211,14 +207,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_RECORD_AUDIO:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setupAudioRecorder();
-                    setupAudioPlayer();
-                }
-                else finish();
-                break;
+        if (requestCode == MY_PERMISSIONS_RECORD_AUDIO){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupAudioRecorder();
+                setupAudioPlayer();
+            }
+            else finish();
         }
     }
 }
