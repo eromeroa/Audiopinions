@@ -1,14 +1,11 @@
 package com.example.android.audiopinions;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -18,23 +15,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     private Chronometer chrono;
     private long pauseOffset;
-    private boolean running;
+    private boolean recording;
     private boolean recorded;
-    private ImageButton botonCentral;
-    private Button botonIzquierdo;
-    private Button botonDerecho;
+    private boolean playing;
+    private ImageButton centralButton;
+    private Button leftButton;
+    private Button rightButton;
 
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
 
-    private MediaRecorder myAudioRecorder = new MediaRecorder();
+    private MediaRecorder audioRecorder = new MediaRecorder();
+    MediaPlayer mediaPlayer = new MediaPlayer();
 
 
     @Override
@@ -42,93 +39,187 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        chrono = findViewById(R.id.chronometer);
-        botonCentral = findViewById(R.id.botonCentral);
-        botonDerecho = findViewById(R.id.botonSend);
-        botonIzquierdo = findViewById(R.id.botonDelete);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_RECORD_AUDIO);
-        }
-
-        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setAudioEncodingBitRate(128000);
-        myAudioRecorder.setAudioSamplingRate(96000);
-        myAudioRecorder.setOutputFile(getFilesDir()+"/audio.aac");
-
-    }
-
-    public void startChronometer(View v){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            if(!running && !recorded){
-                chrono.setBase(SystemClock.elapsedRealtime() - pauseOffset);
-                chrono.start();
-                running = true;
-                botonCentral.setImageResource(R.drawable.stop_icon);
-                try {
-                    myAudioRecorder.prepare();
-                    myAudioRecorder.start();
-                } catch (IllegalStateException ise) {
-
-                } catch (IOException ioe) {
-
-                }
-            }
-            else if (running && !recorded){
-                running = false;
-                recorded = true;
-                chrono.stop();
-                pauseOffset = SystemClock.elapsedRealtime() - chrono.getBase();
-                botonIzquierdo.setVisibility(View.VISIBLE);
-                botonDerecho.setVisibility(View.VISIBLE);
-                botonCentral.setImageResource(R.drawable.play_icon);
-                myAudioRecorder.stop();
-                myAudioRecorder.release();
-                myAudioRecorder = null;
-            }
-            else if (!running && recorded){
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                try {
-                    mediaPlayer.setDataSource(getFilesDir()+"/audio.aac");
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                } catch (Exception e) {
-
-                }
-            }
-        }
+        setViews();
+        if(!checkRecordingPermission()) requestRecordingPermission();
         else{
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_RECORD_AUDIO);
+            setupAudioRecorder();
+            setupAudioPlayer();
         }
     }
 
-    public void deleteAudio(View v){
+    public void centralButton(View v){
+        if(!recording && !recorded){
+            startChrono();
+            startRecording();
+        }
+        else if (recording && !recorded){
+            stopChrono();
+            stopRecording();
+        }
+        else if (!recording && recorded){
+            if (!playing){
+                playAudio();
+            }
+            else{
+                stopAudio();
+            }
+        }
+    }
 
+    private void startChrono(){
+        chrono.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+        chrono.start();
+    }
+
+    private void stopChrono(){
+        chrono.stop();
+        pauseOffset = SystemClock.elapsedRealtime() - chrono.getBase();
+    }
+
+    private void resetChrono(){
+        chrono.setBase(SystemClock.elapsedRealtime());
+        pauseOffset=0;
+    }
+
+    private void startRecording(){
+        recording = true;
+        try {
+            audioRecorder.prepare();
+            audioRecorder.start();
+        } catch (IllegalStateException ise) {
+
+        } catch (IOException ioe) {
+
+        }
+        changeCentralButtonIcon("stop");
+    }
+
+    private void stopRecording(){
+        recording = false;
+        recorded = true;
+        audioRecorder.stop();
+        audioRecorder.reset();
+        setupAudioRecorder();
+        changeCentralButtonIcon("play");
+        activateLateralButtons();
+    }
+
+
+    private void playAudio(){
+        try {
+            mediaPlayer.setDataSource(getFilesDir()+"/audio.aac");
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (Exception e) {
+
+        }
+        resetChrono();
+        startChrono();
+        playing = true;
+        changeCentralButtonIcon("stop");
+        deactivateLateralButtons();
+    }
+
+    private void stopAudio(){
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+        chrono.stop();
+        pauseOffset = SystemClock.elapsedRealtime() - chrono.getBase();
+        playing = false;
+        changeCentralButtonIcon("play");
+        activateLateralButtons();
+    }
+
+    private void changeCentralButtonIcon(String c){
+        switch (c){
+            case "play": centralButton.setImageResource(R.drawable.play_icon);
+                break;
+            case "stop": centralButton.setImageResource(R.drawable.stop_icon);
+                break;
+            case "mic": centralButton.setImageResource(R.drawable.mic_icon);
+                break;
+        }
+    }
+
+    private void activateLateralButtons(){
+        leftButton.setVisibility(View.VISIBLE);
+        rightButton.setVisibility(View.VISIBLE);
+    }
+
+    private void deactivateLateralButtons(){
+        leftButton.setVisibility(View.INVISIBLE);
+        rightButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void setupAudioRecorder(){
+        audioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        audioRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        audioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        audioRecorder.setAudioEncodingBitRate(128000);
+        audioRecorder.setAudioSamplingRate(96000);
+        audioRecorder.setOutputFile(getFilesDir()+"/audio.aac");
+    }
+
+    private void setupAudioPlayer(){
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                stopAudio();
+            }
+        });
+    }
+
+    private void setViews(){
+        chrono = findViewById(R.id.chronometer);
+        centralButton = findViewById(R.id.centralButton);
+        rightButton = findViewById(R.id.rightButton);
+        leftButton = findViewById(R.id.leftButton);
+    }
+
+    private boolean checkRecordingPermission(){
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void requestRecordingPermission(){
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_RECORD_AUDIO);
+    }
+
+    public void leftButton(View v){
         new AlertDialog.Builder(this)
-                .setTitle("Confirmar acción")
-                .setMessage("¿Seguro que quiere borrar el audio?")
+                .setMessage("¿Seguro que quiere eliminar la grabación?")
                 .setPositiveButton("Borrar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        chrono.setBase(SystemClock.elapsedRealtime());
-                        pauseOffset=0;
-                        running = false;
-                        botonIzquierdo.setVisibility(View.INVISIBLE);
-                        botonDerecho.setVisibility(View.INVISIBLE);
-                        botonCentral.setImageResource(R.drawable.mic_icon);
-                        deleteFile("audio.aac");
+                        deleteAudio();
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
+                    public void onClick(DialogInterface dialogInterface, int i) { }
                 })
-                .setIcon(R.drawable.warning_icon)
                 .show();
     }
+
+    private void deleteAudio(){
+        resetChrono();
+        deactivateLateralButtons();
+        changeCentralButtonIcon("mic");
+        recorded = false;
+        deleteFile("audio.aac");
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_RECORD_AUDIO:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setupAudioRecorder();
+                    setupAudioPlayer();
+                }
+                else finish();
+                break;
+        }
+    }
 }
+

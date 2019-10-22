@@ -44,13 +44,13 @@
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/botonDelete"
+                    android:id="@+id/leftButton"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:layout_gravity="center"
                     android:background="@drawable/button_animation"
                     android:gravity="center"
-                    android:onClick="deleteAudio"
+                    android:onClick="leftButton"
                     android:text="Delete"
                     android:textColor="#ffffff"
                     android:visibility="invisible" />
@@ -65,12 +65,12 @@
                 android:orientation="vertical">
 
                 <ImageButton
-                    android:id="@+id/botonCentral"
+                    android:id="@+id/centralButton"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:layout_gravity="center"
                     android:background="@drawable/button_animation"
-                    android:onClick="startChronometer"
+                    android:onClick="centralButton"
                     android:scaleType="fitXY"
                     android:src="@drawable/mic_icon" />
             </LinearLayout>
@@ -84,7 +84,7 @@
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/botonSend"
+                    android:id="@+id/rightButton"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:layout_gravity="center"
