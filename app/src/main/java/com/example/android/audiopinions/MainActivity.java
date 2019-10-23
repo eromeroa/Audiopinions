@@ -3,6 +3,7 @@ package com.example.android.audiopinions;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.SystemClock;
@@ -11,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -25,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean recorded;
     private boolean playing;
     private ImageButton centralButton;
-    private Button leftButton;
-    private Button rightButton;
+    private ImageButton leftButton;
+    private ImageButton rightButton;
 
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
 
@@ -60,6 +62,22 @@ public class MainActivity extends AppCompatActivity {
             if (!playing) playAudio();
             else stopAudio();
         }
+    }
+
+    public void leftButton(View v){
+        AlertDialog.Builder confirm = new AlertDialog.Builder(this);
+        confirm.setMessage("¿Seguro que desea eliminar la grabación?");
+        confirm.setPositiveButton(Html.fromHtml("<font color='#dd0000'>Borrar</font>"), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteAudio();
+            }
+        });
+        confirm.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) { }
+        });
+        confirm.show();
     }
 
     private void startChrono(){
@@ -165,6 +183,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void deleteAudio(){
+        resetChrono();
+        deactivateLateralButtons();
+        changeCentralButtonIcon("mic");
+        recorded = false;
+        deleteFile("audio.aac");
+    }
+
     private void setViews(){
         chrono = findViewById(R.id.chronometer);
         centralButton = findViewById(R.id.centralButton);
@@ -179,31 +205,6 @@ public class MainActivity extends AppCompatActivity {
     private void requestRecordingPermission(){
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_RECORD_AUDIO);
     }
-
-    public void leftButton(View v){
-        new AlertDialog.Builder(this)
-                .setMessage("¿Seguro que quiere eliminar la grabación?")
-                .setPositiveButton("Borrar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteAudio();
-                    }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) { }
-                })
-                .show();
-    }
-
-    private void deleteAudio(){
-        resetChrono();
-        deactivateLateralButtons();
-        changeCentralButtonIcon("mic");
-        recorded = false;
-        deleteFile("audio.aac");
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
