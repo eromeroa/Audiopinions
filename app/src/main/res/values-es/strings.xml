@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Audiopinions</string>
+    <string name="cancel">cancelar</string>
+    <string name="delete">borrar</string>
+    <string name="mood">Seleccione su \nestado de ánimo</string>
+    <string name="delete_recording">¿Seguro que desea eliminar la grabación?</string>
+    <string name="send_recording">¿Seguro que desea enviar la grabación?</string>
+    <string name="send">enviar</string>
+    <string name="happy">Feliz</string>
+    <string name="neutral">Neutral</string>
+    <string name="angry">Enfadado</string>
+</resources>

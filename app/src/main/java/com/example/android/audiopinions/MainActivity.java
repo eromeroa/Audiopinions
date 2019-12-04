@@ -2,6 +2,7 @@ package com.example.android.audiopinions;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
 
     private MediaRecorder audioRecorder = new MediaRecorder();
-    MediaPlayer mediaPlayer = new MediaPlayer();
+    private MediaPlayer mediaPlayer = new MediaPlayer();
 
 
     @Override
@@ -46,6 +47,13 @@ public class MainActivity extends AppCompatActivity {
         else{
             setupAudioRecorder();
             setupAudioPlayer();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            resetLayout();
         }
     }
 
@@ -66,18 +74,27 @@ public class MainActivity extends AppCompatActivity {
 
     public void leftButton(View v){
         AlertDialog.Builder confirm = new AlertDialog.Builder(this);
-        confirm.setMessage("¿Seguro que desea eliminar la grabación?");
-        confirm.setPositiveButton(Html.fromHtml("<font color='#dd0000'>Borrar</font>"), new DialogInterface.OnClickListener() {
+        confirm.setMessage(getString(R.string.delete_recording));
+        confirm.setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                deleteAudio();
+                resetLayout();
+                deleteFile("audio.aac");
             }
         });
-        confirm.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+        confirm.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) { }
         });
-        confirm.show();
+        AlertDialog dialog = confirm.create();
+        dialog.show();
+        Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        buttonPositive.setTextColor(Color.RED);
+    }
+
+    public void rightButton(View v){
+        Intent intent = new Intent(this, MoodSelection.class);
+        startActivityForResult(intent, 1);
     }
 
     private void startChrono(){
@@ -183,12 +200,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void deleteAudio(){
+    private void resetLayout(){
         resetChrono();
         deactivateLateralButtons();
         changeCentralButtonIcon("mic");
         recorded = false;
-        deleteFile("audio.aac");
     }
 
     private void setViews(){

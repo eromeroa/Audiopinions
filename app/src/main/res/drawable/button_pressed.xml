@@ -1,4 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:tint="#005a96"
+    android:tint="#66747477"
+    android:tintMode="multiply"
     android:shape="oval">
 </shape>

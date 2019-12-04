@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context=".MainActivity"
-    tools:layout_editor_absoluteY="25dp">
+    tools:context=".MainActivity">
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -26,6 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
@@ -33,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="5"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,14 +53,16 @@
 
             <ImageButton
                 android:id="@+id/leftButton"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_gravity="center"
-                android:background="@drawable/button_animation"
+                android:background="@drawable/button"
+                android:foreground="@drawable/button_animation"
                 android:gravity="center"
                 android:onClick="leftButton"
                 android:scaleType="fitXY"
-                android:src="@drawable/delete_icon"
+                android:src="@drawable/trash_icon"
+                android:padding="10dp"
                 android:visibility="invisible" />
         </LinearLayout>
 
@@ -72,10 +76,11 @@
 
             <ImageButton
                 android:id="@+id/centralButton"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:background="@drawable/button_animation"
+                android:background="@drawable/button"
+                android:foreground="@drawable/button_animation"
                 android:onClick="centralButton"
                 android:scaleType="fitXY"
                 android:src="@drawable/mic_icon" />
@@ -91,11 +96,13 @@
 
             <ImageButton
                 android:id="@+id/rightButton"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_gravity="center"
-                android:background="@drawable/button_animation"
+                android:background="@drawable/button"
+                android:foreground="@drawable/button_animation"
                 android:gravity="center"
+                android:onClick="rightButton"
                 android:scaleType="fitXY"
                 android:src="@drawable/next_icon"
                 android:visibility="invisible" />
